@@ -19,7 +19,7 @@ export default function Home() {
         location: 'Aguardando permissão do usuário',
       };
 
-      setMensagem('Obtendo localização baseada no IP...');
+      setMensagem('');
       const ipData = await obterLocalizacaoIP();
       info.ip = ipData.ip;
       info.localizacaoIP = {
